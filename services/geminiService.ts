@@ -111,7 +111,7 @@ export const generateIdeas = async (lang: Lang, keyword?: string, categoryId?: s
         }
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -180,7 +180,7 @@ export const generateScript = async (idea: Idea, style: string, lang: Lang, exis
         `;
         
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt
         });
         return response.text;
@@ -212,7 +212,7 @@ export const generateScriptFromChapter = async (book: string, chapter: number, s
         `;
         
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt
         });
         return response.text;
@@ -292,7 +292,7 @@ export const generatePromptsForScript = async (script: string, lang: Lang, chara
         `;
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -383,7 +383,7 @@ export const summarizeScript = async (script: string, lang: Lang): Promise<strin
         `;
         
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt,
         });
         return response.text;
@@ -406,7 +406,7 @@ export const findBiblicalQuote = async (context: string, lang: Lang): Promise<st
         `;
         
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt,
         });
         return response.text;
@@ -421,7 +421,7 @@ export const generateSEOMetadata = async (script: string, lang: Lang): Promise<S
         const prompt = `You are an expert SEO and content strategist for video platforms like YouTube. Your audience is interested in biblical documentaries. I will provide a script. First, use Google Search to analyze top-ranking videos and articles on the script's topic to understand common keywords, effective title structures, and engaging description styles. Based on this research and the provided script, generate the following in ${lang.startsWith('es') ? 'Spanish' : 'English'}: 1. A compelling, SEO-optimized title (max 70 characters). 2. A captivating description (max 500 characters) that hooks the viewer and includes a summary of the content. 3. A list of 10-15 relevant hashtags. Your output MUST be a single, minified JSON object with the keys "title", "description", and "hashtags" (an array of strings). Do not include any other text, markdown, or explanations before or after the JSON object. Script: --- ${script} ---`;
         
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt,
             config: {
                 tools: [{googleSearch: {}}],
@@ -467,7 +467,7 @@ export const analyzeVerse = async (book: string, chapter: number, startVerse: nu
         `;
         
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt
         });
         return response.text;
@@ -508,7 +508,7 @@ export const generateRandomVerseScript = async (style: string, lang: Lang): Prom
         `;
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: prompt,
             config: {
                 tools: [{googleSearch: {}}],
@@ -545,7 +545,7 @@ export const expandPrompt = async (prompt: string): Promise<string> => {
         `;
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-1.5-flash",
             contents: apiPrompt,
         });
         return response.text;
