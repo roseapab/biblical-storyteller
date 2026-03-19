@@ -317,21 +317,52 @@ export const generatePromptsForScript = async (script: string, lang: Lang, chara
 
 export const generateImage = async (prompt: string, aspectRatio: AspectRatio, visualStyle: VisualStyle): Promise<string> => {
     try {
-        const ai = getAiClient();
-        const enhancedPrompt = `Style: ${visualStyle}. ${prompt}`;
-        
-        const response = await ai.models.generateImages({
-            model: 'imagen-4.0-generate-001',
-            prompt: enhancedPrompt,
-            config: {
-                numberOfImages: 1,
-                outputMimeType: 'image/jpeg',
-                aspectRatio: aspectRatio,
-            },
-        });
+        // 1. Intentar con Hugging Face (FLUX.1-schnell) si hay API KEY
+        const hfKey = import.meta.env.VITE_HF_API_KEY;
+        if (hfKey) {
+            try {
+                const hfModelUrl = "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell";
+                const enhancedPrompt = `${visualStyle} style: ${prompt}`;
+                
+                const hfResponse = await fetch(hfModelUrl, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${hfKey}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        inputs: enhancedPrompt,
+                        parameters: {
+                            num_inference_steps: 4,
+                        },
+                        options: {
+                            wait_for_model: true
+                        }
+                    }),
+                });
 
-        const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
-        return `data:image/jpeg;base64,${base64ImageBytes}`;
+                if (hfResponse.ok) {
+                    const blob = await hfResponse.blob();
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result as string);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                }
+            } catch (e) {
+                console.warn("Hugging Face failed, falling back to Pollinations AI", e);
+            }
+        }
+
+        // 2. Fallback: Pollinations AI (Gratis, sin key, alta calidad con modelo flux)
+        const width = 1024;
+        const height = aspectRatio === '16:9' ? 576 : (aspectRatio === '9:16' ? 1792 : 1024);
+        const seed = Math.floor(Math.random() * 1000000);
+        const encodedPrompt = encodeURIComponent(`${visualStyle} style biblical scene: ${prompt}`);
+        
+        // Retornamos la URL de Pollinations directamente
+        return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&seed=${seed}&nologo=true&enhance=true`;
     } catch (error) {
         handleApiError(error);
     }
