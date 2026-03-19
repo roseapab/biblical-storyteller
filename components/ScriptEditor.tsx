@@ -572,9 +572,14 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({ projectData, onUpdateScript
                                             </div>
                                         </div>
                                         <textarea
-                                            readOnly
                                             value={item.prompt}
-                                            className="w-full h-48 bg-gray-800 border border-gray-700 rounded-md p-3 text-sm text-gray-400 resize-none focus:outline-none"
+                                            onChange={(e) => {
+                                                const updated = scriptSegments.map(s => s.id === item.id ? { ...s, prompt: e.target.value } : s);
+                                                setScriptSegments(updated);
+                                                onUpdateScript(updated);
+                                            }}
+                                            className="w-full h-48 bg-gray-900 border border-gray-700 rounded-md p-3 text-sm text-gray-200 resize-none focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                            placeholder={t('visualPromptPlaceholder') || "Escribe aquí la descripción de la imagen..."}
                                         />
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <Select
